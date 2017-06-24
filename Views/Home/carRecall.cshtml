@@ -1,0 +1,114 @@
+﻿
+@{
+    ViewBag.Title = "carRecall";
+}
+
+<h2>Car Recall Data</h2>
+
+<select id="emptyDropdown" placeholder="Year" onchange="myFunction()"></select>
+<select id="emptyDropdown2" placeholder="Make" onchange="secondFunction()"></select>
+<select id="emptyDropdown3" placeholder="Model" onchange="thirdFunction()"></select>
+<select id="emptyDropdown4" placeholder="Trim"></select>
+
+@*<input type="text" name="year" placeholder="Year" id="carYear"/>
+<input type="text" name="make" placeholder="Make" id="carMake" />
+<input type="text" name="model" placeholder="Model" id="carModel" />*@
+@*<inut type="text" name="trim" placeholder="Trim" id="carTrim" />*@
+
+<button onclick="carRecall()">Send</button>
+<div id="rclMsg"></div>
+@section scripts {
+    
+    <script>
+        function carRecall() {
+            var year = $('#emptyDropdown').val();
+            var make = $('#emptyDropdown2').val();
+            var model = $('#emptyDropdown3').val();
+            var trim = $('#emptyDropdown4').val();
+            //var trim = $('carTrim').val();
+
+            $.ajax({
+
+                type: "GET",
+                url: "http://localhost:54918/api/Cars/carRecall?year=" + year + "&make=" + make + "&model=" + model,
+                dataType: "json",
+                success: function (data) {
+                    var appendData = "<h3> Recall Data for " + year + " " + make + " " + model + "</h3>";
+                    $('#rclMsg').html(appendData += data);
+
+                }
+
+            })
+        }
+
+
+        //This function occurs upon document.ready and finds all of the years from the nhtsa recall data through our getyears
+        //method
+        $(function() {
+
+
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:54918/api/Cars/Year",
+                success: function (data) {
+                        $.each(data, function (key, value) {
+                        $('#emptyDropdown').append("<option>" + value + "</option>");
+                    });
+                }
+            });
+        })
+        
+
+        //This function is triggered whenever the value of the first dropdown changes and populates all of the makes based on the selected year
+        function myFunction() {
+            var selectedyear = $('#emptyDropdown').val();
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:54918/api/Cars/Make?year=" + selectedyear,
+                success: function (data) {
+                    $.each(data, function (key, value) {
+                        $('#emptyDropdown2').append("<option>" + value + "</option>");
+                    });
+                }
+            });
+ 
+        
+        }
+
+        function secondFunction() {
+            var selectedyear = $('#emptyDropdown').val();
+            var selectedmake = $('#emptyDropdown2').val();
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:54918/api/Cars/Model?year=" + selectedyear + "&make=" + selectedmake,
+                success: function (data) {
+                    $.each(data, function (key, value) {
+                        $('#emptyDropdown3').append("<option>" + value + "</option>");
+                    });
+                }
+            });
+
+
+        }
+
+        function thirdFunction() {
+            var selectedyear = $('#emptyDropdown').val();
+            var selectedmake = $('#emptyDropdown2').val();
+            var selectedmodel = $('#emptyDropdown3').val();
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:54918/api/Cars/Trim?year=" + selectedyear + "&make=" + selectedmake + "&model=" + selectedmodel,
+                success: function (data) {
+                    $.each(data, function (key, value) {
+                        $('#emptyDropdown4').append("<option>" + value + "</option>");
+                    });
+                }
+            });
+
+
+        }
+
+    </script>
+    
+    
+    }
